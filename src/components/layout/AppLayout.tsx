@@ -1,4 +1,4 @@
-import { BarChart3, Egg, Home, Sprout, UserRound, Wheat } from 'lucide-react';
+import { BarChart3, Banknote, Egg, Home, Sprout, UserRound, Wheat } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useFarmData } from '../../context/FarmDataContext';
 
@@ -7,6 +7,7 @@ const navItems = [
   { to: '/flocks', label: 'Flocks', icon: Sprout },
   { to: '/eggs', label: 'Eggs', icon: Egg },
   { to: '/feed', label: 'Feed', icon: Wheat },
+  { to: '/finance', label: 'Finance', icon: Banknote },
   { to: '/profile', label: 'Profile', icon: UserRound },
 ];
 

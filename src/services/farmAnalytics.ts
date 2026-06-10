@@ -1,5 +1,5 @@
-import { differenceInCalendarDays, isSameMonth, parseISO, subDays } from 'date-fns';
-import type { EggLog, FarmData, FeedStock, FeedUsage } from '../types/farm';
+import { differenceInCalendarDays, format, isSameMonth, parseISO, subDays } from 'date-fns';
+import type { EggLog, Expense, FarmData, FeedStock, FeedUsage, Income } from '../types/farm';
 
 export function getDashboardMetrics(data: FarmData) {
   const today = new Date();
@@ -12,18 +12,25 @@ export function getDashboardMetrics(data: FarmData) {
   const feedToday = data.feedUsage
     .filter((log) => log.date === todayKey)
     .reduce((total, log) => total + log.quantityKg, 0);
+  const mortalityThisMonth = data.mortalityLogs
+    .filter((log) => isSameMonth(parseISO(log.date), today))
+    .reduce((total, log) => total + log.birdsLost, 0);
   const feedExpense = data.feedStock.reduce((total, stock) => total + stock.costKes, 0);
   const estimatedRevenue = data.eggLogs.reduce((total, log) => total + log.eggsCollected * 15, 0);
+  const recordedRevenue = data.income.reduce((total, item) => total + item.amountKes, 0);
+  const recordedExpenses = data.expenses.reduce((total, item) => total + item.amountKes, 0);
+  const revenue = recordedRevenue || estimatedRevenue;
+  const expenses = recordedExpenses || feedExpense;
 
   return {
     totalBirds,
     activeFlocks: activeFlocks.length,
     eggsToday,
     feedToday,
-    mortalityThisMonth: 0,
-    revenue: estimatedRevenue,
-    expenses: feedExpense,
-    profit: estimatedRevenue - feedExpense,
+    mortalityThisMonth,
+    revenue,
+    expenses,
+    profit: revenue - expenses,
   };
 }
 
@@ -90,4 +97,55 @@ export function getMonthlyFeedSpend(stock: FeedStock[]) {
 export function getDailyFeedRate(usage: FeedUsage[]) {
   const recent = usage.filter((item) => parseISO(item.date) >= subDays(new Date(), 7));
   return recent.reduce((total, item) => total + item.quantityKg, 0) / Math.max(recent.length, 1);
+}
+
+export function getFinanceSummary(income: Income[], expenses: Expense[]) {
+  const totalIncome = income.reduce((total, item) => total + item.amountKes, 0);
+  const totalExpenses = expenses.reduce((total, item) => total + item.amountKes, 0);
+  const monthlyIncome = income
+    .filter((item) => isSameMonth(parseISO(item.date), new Date()))
+    .reduce((total, item) => total + item.amountKes, 0);
+  const monthlyExpenses = expenses
+    .filter((item) => isSameMonth(parseISO(item.date), new Date()))
+    .reduce((total, item) => total + item.amountKes, 0);
+
+  return {
+    totalIncome,
+    totalExpenses,
+    netProfit: totalIncome - totalExpenses,
+    monthlyIncome,
+    monthlyExpenses,
+    monthlyProfit: monthlyIncome - monthlyExpenses,
+  };
+}
+
+export function getFinanceTrend(income: Income[], expenses: Expense[]) {
+  const totals = new Map<string, { month: string; income: number; expenses: number; profit: number }>();
+
+  income.forEach((item) => {
+    const month = format(parseISO(item.date), 'MMM yyyy');
+    const row = totals.get(month) ?? { month, income: 0, expenses: 0, profit: 0 };
+    row.income += item.amountKes;
+    row.profit = row.income - row.expenses;
+    totals.set(month, row);
+  });
+
+  expenses.forEach((item) => {
+    const month = format(parseISO(item.date), 'MMM yyyy');
+    const row = totals.get(month) ?? { month, income: 0, expenses: 0, profit: 0 };
+    row.expenses += item.amountKes;
+    row.profit = row.income - row.expenses;
+    totals.set(month, row);
+  });
+
+  return Array.from(totals.values()).slice(-6);
+}
+
+export function getExpenseBreakdown(expenses: Expense[]) {
+  const totals = expenses.reduce<Record<string, number>>((groups, item) => {
+    groups[item.category] = (groups[item.category] ?? 0) + item.amountKes;
+    return groups;
+  }, {});
+
+  return Object.entries(totals).map(([category, amount]) => ({ category, amount }));
 }

@@ -70,6 +70,18 @@ export const sqliteSchema = [
     created_at TEXT NOT NULL,
     FOREIGN KEY (flock_id) REFERENCES flocks(id)
   );`,
+  `CREATE TABLE IF NOT EXISTS health_records (
+    id TEXT PRIMARY KEY NOT NULL,
+    flock_id TEXT NOT NULL,
+    record_type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    date_administered TEXT NOT NULL,
+    next_due_date TEXT,
+    dosage TEXT,
+    notes TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (flock_id) REFERENCES flocks(id)
+  );`,
   `CREATE TABLE IF NOT EXISTS expenses (
     id TEXT PRIMARY KEY NOT NULL,
     amount_kes REAL NOT NULL,

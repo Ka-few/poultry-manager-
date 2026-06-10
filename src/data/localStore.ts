@@ -92,7 +92,85 @@ export const seedFarmData: FarmData = {
       createdAt: formatISO(today),
     },
   ],
+  expenses: [
+    {
+      id: 'expense-feed-1',
+      amountKes: 16800,
+      category: 'Feed',
+      date: isoDate(subDays(today, 10)),
+      notes: 'Layers mash purchase',
+      createdAt: formatISO(subDays(today, 10)),
+    },
+    {
+      id: 'expense-labour-1',
+      amountKes: 3500,
+      category: 'Labour',
+      date: isoDate(subDays(today, 5)),
+      notes: 'Weekly farm help',
+      createdAt: formatISO(subDays(today, 5)),
+    },
+    {
+      id: 'expense-vaccine-1',
+      amountKes: 1200,
+      category: 'Vaccination',
+      date: isoDate(subDays(today, 3)),
+      notes: 'Newcastle vaccine',
+      createdAt: formatISO(subDays(today, 3)),
+    },
+  ],
+  income: [
+    {
+      id: 'income-eggs-1',
+      amountKes: 12600,
+      source: 'Egg sales',
+      date: isoDate(subDays(today, 6)),
+      notes: 'Seven trays sold',
+      createdAt: formatISO(subDays(today, 6)),
+    },
+    {
+      id: 'income-manure-1',
+      amountKes: 1800,
+      source: 'Manure sales',
+      date: isoDate(subDays(today, 2)),
+      notes: 'Garden manure bags',
+      createdAt: formatISO(subDays(today, 2)),
+    },
+  ],
+  mortalityLogs: [
+    {
+      id: 'mortality-1',
+      flockId: 'flock-layers-1',
+      date: isoDate(subDays(today, 9)),
+      birdsLost: 2,
+      suspectedCause: 'Unknown',
+      notes: 'Found during morning check',
+      createdAt: formatISO(subDays(today, 9)),
+    },
+  ],
+  healthRecords: [
+    {
+      id: 'health-vax-1',
+      flockId: 'flock-layers-1',
+      recordType: 'Vaccination',
+      name: 'Newcastle',
+      dateAdministered: isoDate(subDays(today, 21)),
+      nextDueDate: isoDate(addDays(today, 7)),
+      dosage: 'As directed',
+      notes: 'Routine vaccine',
+      createdAt: formatISO(subDays(today, 21)),
+    },
+  ],
 };
+
+function normalizeFarmData(data: FarmData): FarmData {
+  return {
+    ...data,
+    expenses: data.expenses ?? [],
+    income: data.income ?? [],
+    mortalityLogs: data.mortalityLogs ?? [],
+    healthRecords: data.healthRecords ?? [],
+  };
+}
 
 export function loadFarmData(): FarmData {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -101,7 +179,9 @@ export function loadFarmData(): FarmData {
     return seedFarmData;
   }
 
-  return JSON.parse(raw) as FarmData;
+  const data = normalizeFarmData(JSON.parse(raw) as FarmData);
+  persistFarmData(data);
+  return data;
 }
 
 export function persistFarmData(data: FarmData) {

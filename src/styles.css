@@ -250,7 +250,8 @@ h2 {
 }
 
 .primary-button,
-.secondary-button {
+.secondary-button,
+.danger-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -271,6 +272,67 @@ h2 {
 .secondary-button {
   background: #eef3ef;
   color: #184f3b;
+}
+
+.danger-button {
+  background: #b9412d;
+  color: #ffffff;
+}
+
+.tab-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #dae5d8;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(42, 64, 52, 0.08);
+}
+
+.tab-button {
+  min-height: 54px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #42594e;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background: #184f3b;
+  color: #ffffff;
+}
+
+.form-actions,
+.header-actions,
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.form-actions {
+  margin-top: 16px;
+}
+
+.icon-button {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: #eef3ef;
+  color: #184f3b;
+  cursor: pointer;
+}
+
+.icon-button.danger {
+  background: #fff1ed;
+  color: #b9412d;
 }
 
 .form-grid {
@@ -349,9 +411,14 @@ textarea {
 
 .flock-card {
   display: grid;
-  gap: 18px;
+  gap: 14px;
   min-height: 170px;
   padding: 18px;
+}
+
+.card-main-link {
+  display: grid;
+  gap: 18px;
 }
 
 .flock-card strong,
@@ -400,6 +467,11 @@ textarea {
   padding: 12px 14px;
   border-radius: 8px;
   background: #f6f9f5;
+}
+
+.table-row.with-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
 }
 
 .summary-row span,
@@ -485,7 +557,7 @@ textarea {
   }
 
   .nav-list {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     width: 100%;
   }
 
@@ -527,5 +599,10 @@ textarea {
 
   h1 {
     font-size: 1.6rem;
+  }
+
+  .table-row.with-actions {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 }
