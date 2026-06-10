@@ -18,6 +18,16 @@ body {
   min-height: 100vh;
 }
 
+.fatal-error {
+  display: grid;
+  min-height: 100vh;
+  align-content: center;
+  gap: 12px;
+  padding: 32px;
+  background: #fff7f4;
+  color: #7b2418;
+}
+
 button,
 input,
 select,

@@ -9,15 +9,24 @@ export async function initializeSQLite() {
     return undefined;
   }
 
-  const sqlite = new SQLiteConnection(CapacitorSQLite);
-  db = await sqlite.createConnection('poultry_manager', false, 'no-encryption', 1, false);
-  await db.open();
+  try {
+    const sqlite = new SQLiteConnection(CapacitorSQLite);
+    const consistent = await sqlite.checkConnectionsConsistency();
+    const existing = consistent.result ? await sqlite.isConnection('poultry_manager', false) : { result: false };
+    db = existing.result
+      ? await sqlite.retrieveConnection('poultry_manager', false)
+      : await sqlite.createConnection('poultry_manager', false, 'no-encryption', 1, false);
+    await db.open();
 
-  for (const statement of sqliteSchema) {
-    await db.execute(statement);
+    for (const statement of sqliteSchema) {
+      await db.execute(statement);
+    }
+
+    return db;
+  } catch (error) {
+    console.warn('SQLite initialization skipped; local storage remains available.', error);
+    return undefined;
   }
-
-  return db;
 }
 
 export function getSQLiteConnection() {

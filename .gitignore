@@ -36,3 +36,4 @@ Thumbs.db
 # Local test and tool cache
 .cache/
 .nyc_output/
+.android-sdk/

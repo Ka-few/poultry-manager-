@@ -50,7 +50,9 @@ export function FarmDataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<FarmData>(() => loadFarmData());
 
   useEffect(() => {
-    void initializeSQLite();
+    initializeSQLite().catch((error) => {
+      console.warn('SQLite initialization skipped; continuing with local offline storage.', error);
+    });
   }, []);
 
   useEffect(() => {
