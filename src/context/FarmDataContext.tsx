@@ -1,7 +1,6 @@
 import { formatISO } from 'date-fns';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { createId, loadFarmData, persistFarmData } from '../data/localStore';
-import { initializeSQLite } from '../data/sqliteClient';
 import type {
   EggLog,
   Expense,
@@ -48,12 +47,6 @@ const FarmDataContext = createContext<FarmDataContextValue | undefined>(undefine
 
 export function FarmDataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<FarmData>(() => loadFarmData());
-
-  useEffect(() => {
-    initializeSQLite().catch((error) => {
-      console.warn('SQLite initialization skipped; continuing with local offline storage.', error);
-    });
-  }, []);
 
   useEffect(() => {
     persistFarmData(data);
