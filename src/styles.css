@@ -315,6 +315,18 @@ h2 {
   color: #ffffff;
 }
 
+.report-filter {
+  display: grid;
+  grid-template-columns: 220px repeat(2, minmax(180px, 240px));
+  gap: 14px;
+  align-items: end;
+  padding: 18px;
+  border: 1px solid #dae5d8;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(42, 64, 52, 0.08);
+}
+
 .report-sheet {
   display: grid;
   gap: 22px;
@@ -373,6 +385,16 @@ h2 {
 
 .form-actions {
   margin-top: 16px;
+}
+
+.form-status {
+  color: #1f7a55;
+  font-weight: 800;
+}
+
+.action-status {
+  color: #42594e;
+  font-weight: 800;
 }
 
 .icon-button {
@@ -644,6 +666,7 @@ textarea {
   .split-grid,
   .form-grid,
   .filter-bar,
+  .report-filter,
   .kpi-grid,
   .kpi-grid.compact,
   .card-grid {
