@@ -1,6 +1,7 @@
 import { formatISO } from 'date-fns';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { createId, loadFarmData, persistFarmData } from '../data/localStore';
+import { isSQLiteAvailable, loadFarmDataFromSQLite, persistFarmDataToSQLite } from '../data/sqliteClient';
 import type {
   EggLog,
   Expense,
@@ -47,10 +48,45 @@ const FarmDataContext = createContext<FarmDataContextValue | undefined>(undefine
 
 export function FarmDataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<FarmData>(() => loadFarmData());
+  const [nativeStorageReady, setNativeStorageReady] = useState(!isSQLiteAvailable());
+
+  useEffect(() => {
+    if (!isSQLiteAvailable()) return;
+
+    let cancelled = false;
+
+    async function hydrateNativeData() {
+      try {
+        const sqliteData = await loadFarmDataFromSQLite();
+        if (cancelled) return;
+
+        if (sqliteData) {
+          setData(sqliteData);
+        } else {
+          await persistFarmDataToSQLite(data);
+        }
+      } catch (error) {
+        console.warn('SQLite storage unavailable; falling back to WebView storage.', error);
+      } finally {
+        if (!cancelled) setNativeStorageReady(true);
+      }
+    }
+
+    void hydrateNativeData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     persistFarmData(data);
-  }, [data]);
+    if (nativeStorageReady) {
+      persistFarmDataToSQLite(data).catch((error) => {
+        console.warn('Could not persist farm data to SQLite.', error);
+      });
+    }
+  }, [data, nativeStorageReady]);
 
   const value = useMemo<FarmDataContextValue>(
     () => ({

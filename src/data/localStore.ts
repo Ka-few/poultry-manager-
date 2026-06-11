@@ -162,7 +162,7 @@ export const seedFarmData: FarmData = {
   ],
 };
 
-function normalizeFarmData(data: FarmData): FarmData {
+export function normalizeFarmData(data: FarmData): FarmData {
   return {
     ...data,
     expenses: data.expenses ?? [],
@@ -189,7 +189,16 @@ export function persistFarmData(data: FarmData) {
 }
 
 export function createId(prefix: string) {
-  return `${prefix}-${crypto.randomUUID()}`;
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+
+  const randomPart =
+    typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function'
+      ? Array.from(crypto.getRandomValues(new Uint32Array(2)), (value) => value.toString(36)).join('')
+      : Math.random().toString(36).slice(2);
+
+  return `${prefix}-${Date.now().toString(36)}-${randomPart}`;
 }
 
 export const nextVaccinations = [

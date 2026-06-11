@@ -8,6 +8,7 @@ import { FinancePage } from '../features/finance/FinancePage';
 import { FlockDetailPage } from '../features/flocks/FlockDetailPage';
 import { FlocksPage } from '../features/flocks/FlocksPage';
 import { ProfilePage } from '../features/profile/ProfilePage';
+import { ReportsPage } from '../features/reports/ReportsPage';
 import { AppErrorBoundary } from './AppErrorBoundary';
 
 export function App() {
@@ -24,6 +25,7 @@ export function App() {
               <Route path="/eggs" element={<EggProductionPage />} />
               <Route path="/feed" element={<FeedPage />} />
               <Route path="/finance" element={<FinancePage />} />
+              <Route path="/reports" element={<ReportsPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
